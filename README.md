@@ -140,7 +140,7 @@ This project uses Ray to manage AWS EC2 instances for distributed computing. Fol
     Submit the Ray job:
 
     ```bash
-    ray job submit --address http://localhost:8265 --working-dir . -- python3 remote-ray.py
+    ray job submit --address http://localhost:8265 --working-dir . -- python3 main.py
     ```
 
 18. **Check the S3 bucket:**
