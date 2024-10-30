@@ -27,7 +27,7 @@ model_name = "Qwen/Qwen2.5-0.5B"
 use_gpu = True
 num_workers = 1
 block_size = 512
-batch_size = 1
+batch_size = 5
 
 # Load dataset
 print("Loading tiny_shakespeare dataset")
