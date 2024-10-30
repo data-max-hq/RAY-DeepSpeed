@@ -28,7 +28,6 @@ use_gpu = True
 num_workers = 1
 block_size = 512
 batch_size = 1
-#storage_path = "s3://your-bucket-here"  # Set your S3 bucket
 
 # Load dataset
 print("Loading tiny_shakespeare dataset")
