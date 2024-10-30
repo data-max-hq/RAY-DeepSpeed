@@ -1,0 +1,73 @@
+# An unique identifier for the head node and workers of this cluster.
+cluster_name: ray-cluster
+
+# Cloud-provider specific configuration.
+provider:
+  type: aws
+  region: eu-central-1
+  cache_stopped_nodes: True
+
+auth:
+  ssh_user: ubuntu
+
+# The maximum number of workers nodes to launch in addition to the head
+# node.
+min_workers: 1
+max_workers: 5
+
+idle_timeout_minutes: 10
+
+# Tell the autoscaler the allowed node types and the resources they provide.
+# The key is the name of the node type, which is for debugging purposes.
+# The node config specifies the launch config and physical instance type.
+available_node_types:
+  ray.head.default:
+    resources:
+      #CPU: 4
+      resources: 5
+    node_config:
+      ImageId: ami-07652eda1fbad7432
+      InstanceType: p3.2xlarge
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 128
+  ray.worker.default:
+    resources:
+      #CPU: 1
+      resources: 15
+    node_config:
+      IamInstanceProfile:
+          Arn: arn:aws:iam::<your-account-id>:instance-profile/ray-s3-instance-profile
+      ImageId: ami-07652eda1fbad7432
+      InstanceType: p3.2xlarge
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 256
+
+head_node_type: ray.head.default
+
+head_start_ray_commands:
+  - ray stop
+  - ray start --head --port=6379 --object-manager-port=8076 --autoscaling-config=~/ray_bootstrap_config.yaml --dashboard-host=0.0.0.0
+  - pip show ray
+
+worker_start_ray_commands:
+  - ray stop
+  - ray start --address=$RAY_HEAD_IP:6379 --object-manager-port=8076
+
+setup_commands:
+  - sleep 5
+  - wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+  - sudo dpkg -i cuda-keyring_1.1-1_all.deb
+  - sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+  - sudo DEBIAN_FRONTEND=noninteractive apt install -y cuda-12-2
+  - echo 'export PATH=/usr/local/cuda-12.2/bin:$PATH' >> ~/.bashrc
+  - echo 'export LD_LIBRARY_PATH=/usr/local/cuda-12.2/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
+  - source ~/.bashrc
+  - sudo modprobe nvidia
+  - sudo DEBIAN_FRONTEND=noninteractive apt install python3-pip -y
+  - pip install -U "ray[data,train,tune,serve]"
+  - pip install datasets evaluate accelerate==0.34.2 transformers==4.44.2 torch "https://download.pytorch.org/whl/cu121_full/torch-2.5.0%2Bcu121-cp310-cp310-linux_x86_64.whl" torchaudio "https://download.pytorch.org/whl/cu121_full/torchaudio-2.5.0%2Bcu121-cp310-cp310-linux_x86_64.whl" torchvision "https://download.pytorch.org/whl/cu121_full/torchvision-0.20.0%2Bcu121-cp310-cp310-linux_x86_64.whl" torchmetrics==1.5.1 deepspeed==0.15.3
+  - pip install scikit-learn
