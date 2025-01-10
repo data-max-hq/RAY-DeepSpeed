@@ -152,3 +152,6 @@ This project uses Ray to manage AWS EC2 instances for distributed computing. Fol
 Ray is a distributed computing framework that allows you to easily scale your applications across multiple machines. In this setup, you'll use Ray to manage a head node and large VM instance's with powerful CPU's and GPU's, leveraging their respective hardware capabilities to perform computational tasks efficiently. Additionally, using DeepSpeed with the ZERO 3 optimizer will enhance your fine-tuning process.
 
 For detailed documentation on Ray, visit the [Ray documentation](https://docs.ray.io/). For more on DeepSpeed, check out the [DeepSpeed documentation](https://www.deepspeed.ai/docs/).
+
+
+Made with ❤️ by [datamax.ai](https://www.datamax.ai/).
